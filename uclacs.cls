@@ -80,7 +80,7 @@
 \DeclareBoolOption{noheader}
 \DeclareBoolOption{homework}
 \DeclareStringOption{hwnum}
-\DeclareComplementaryOption{notebook}{homework}
+\DeclareBoolOption{notebook}
 \DeclareStringOption{coursesecnum}
 \DeclareStringOption{studentid}
 \DeclareStringOption{coursename}
@@ -260,6 +260,7 @@
   \newcommand{\popline}{\Indm\dosemic}% Undent
   \SetKwInOut{Input}{Input}
   \SetKwInOut{Output}{Output}
+  \SetKwProg{proc}{Procedure}{}{}
   \SetKwComment{Comment}{$\triangleright$\ }{}
   \SetKwProg{Fn}{Function}{:}{end}
 
@@ -318,7 +319,7 @@
 \fancyhead[L]{%
   \ifthenelse{\value{page}=1}{%
     \large\textbf{\doctitle}
-    \unless\ifCS@homework
+    \ifCS@notebook
     \\ Course Notebook
     \fi
   }{%
