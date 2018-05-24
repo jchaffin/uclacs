@@ -11,8 +11,10 @@
 \RequirePackage{calc}
 \RequirePackage{ifpdf}
 \RequirePackage{remreset}
+\RequirePackage{etoolbox}
+\RequirePackage{changepage}
 \RequirePackage[utf8x]{inputenc}
-\RequirePackage[left=0.75in, right=0.75in, top=1.3in, bottom=1in]{geometry}
+\RequirePackage[left=1in, right=1in, top=1.3in, bottom=1in]{geometry}
 \RequirePackage{fancyhdr}
 \RequirePackage{lastpage}
 \RequirePackage{kvoptions-patch}
@@ -46,14 +48,6 @@
 \DeclareBoolOption{noamssymb}
 \DeclareBoolOption{nohyperref}
 
-% Font Options
-\DeclareBoolOption[true]{times}
-\DeclareComplementaryOption{garamond}{times}
-\DeclareComplementaryOption{palatino}{times}
-\DeclareComplementaryOption{utopia}{times}
-\DeclareComplementaryOption{ctex}{times}
-
-
 % Other Default Packages
 \DeclareBoolOption{noulem}
 \DeclareBoolOption{norotating}
@@ -62,9 +56,13 @@
 \DeclareBoolOption{noenumitem}
 \DeclareBoolOption{noxcolor}
 \DeclareBoolOption{noamsthm}
+\DeclareBoolOption{nocolorthms}
 \DeclareBoolOption{nominted}
-\DeclareBoolOption{noalgorithm2e}
+\DeclareBoolOption{nolistings}
 \DeclareBoolOption{nonameref}
+\DeclareBoolOption{nocleveref}
+\DeclareBoolOption{novarioref}
+\DeclareBoolOption{noalgorithm2e}
 \DeclareBoolOption{nopdfrender}
 \DeclareBoolOption{nonatbib}
 \DeclareBoolOption{nolua}
@@ -72,6 +70,7 @@
 
 
 % Other Packages
+\DeclareBoolOption{times}
 \DeclareBoolOption{microtype}
 \DeclareBoolOption{paralist}
 \DeclareBoolOption{setspace}
@@ -118,31 +117,27 @@
 \ifthenelse{\boolean{CS@noamssymb}}{}{%
   \RequirePackage{amsmath}
   \RequirePackage{mathptmx}
+  \RequirePackage{amsfonts}
   \RequirePackage{amssymb}
+  \RequirePackage{calligra}
+  \RequirePackage{calrsfs}
+  \RequirePackage[mathscr]{euscript}
+  \DeclareMathAlphabet{\mathcalligra}{T1}{calligra}{m}{n}
   \newcommand{\R}{\mathbb{R}}
   \newcommand{\N}{\mathbb{N}}
   \newcommand{\Z}{\mathbb{Z}}
 }
 
-\ifthenelse{\boolean{CS@noxcolor}}{}{%
-  \RequirePackage[dvipsnames,x11names]{xcolor}
-  \ifthenelse{\boolean{CS@nohyperref}}{}{%
-    \RequirePackage{hyperref}
-    \colorlet{csurlcolor}{Aquamarine!85!black}
-    \hypersetup{
-      colorlinks=true,
-      linkcolor=black,
-      filecolor=black,
-      urlcolor=csurlcolor
-    }
-  }
-}
+\ifthenelse{\boolean{CS@noxcolor}}{}{\RequirePackage[dvipsnames,x11names]{xcolor}}
 
-% Font Options
-\ifthenelse{\boolean{CS@times}}{}{%
+
+\ifthenelse{\boolean{CS@times}}{
   \RequirePackage{fontspec}
   \setmainfont{Times New Roman}
-} 
+}{%
+  \RequirePackage{fontspec}
+  \setmainfont[Ligatures=TeX, Numbers={OldStyle, Proportional}]{Linux Libertine}
+}
 
 % Other Default Packages
 \ifthenelse{\boolean{CS@noulem}}{}{\RequirePackage[normalem]{ulem}}
@@ -151,24 +146,60 @@
 \ifthenelse{\boolean{CS@nomulticol}}{}{\RequirePackage{multicol}}
 \ifthenelse{\boolean{CS@noenumitem}}{}{\RequirePackage{enumitem}}
 
-
 \ifthenelse{\boolean{CS@noamsthm}}{}{%
   \RequirePackage{amsthm}
   \RequirePackage{thmtools}
-  \declaretheoremstyle[
-    spaceabove=6pt, 
-    spacebelow=6pt,
-    headfont=\normalfont\bfseries,
-    notefont=\mdseries,
-    bodyfont=\normalfont,
-    postheadspace=1em
-  ]{defstyle}
+  \definecolor{thmtextcolor}{RGB}{0, 175, 236}
+  \definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
+
+  \colorlet{LightGray}{White!90!Periwinkle}
+
+  \AtBeginEnvironment{mdframed}{%
+    \def\mdf@footnoterule{}
+  }
+  \declaretheoremstyle[%
+    mdframed={
+      skipabove=8pt,
+      skipbelow=6pt,
+      nobreak=true,
+      hidealllines=true,
+      backgroundcolor={LightGray},
+      innerleftmargin=-3pt,
+      innerrightmargin=5pt,
+      align=center
+    },
+    spaceabove=3pt,spacebelow=3pt,%
+    headfont=\normalfont\bfseries,% 
+    notefont=\normalfont\bfseries,%
+    notebraces={}{. },%
+    headpunct={},%
+    postheadspace=0pt,%
+    postheadhook={\hangindent16pt},
+    headindent=0pt,%
+    bodyfont=\normalfont,%
+    headformat={\llap{\smash{\parbox[t]{0.8in}{\centering \NAME\\
+            \NUMBER}}} \hspace{8pt} \NOTE},%
+  ]{thmsty}
+
+
+
   \declaretheorem[
-    shaded={rulewidth=2pt, textwidth=0.80\textwidth}, 
+    style=thmsty,
     numberwithin=section
+  ]{theorem}
+
+  \declaretheorem[
+    style=thmsty,
+    sharenumber=theorem
   ]{definition}
-  \newtheorem{theorem}{Theorem}[section]
-  \newtheorem{lemma}[theorem]{Lemma}
+
+  \declaretheorem[
+    style=thmsty,
+    sharenumber=theorem
+  ]{lemma}
+
+  \renewcommand\thmt@space{}
+
 }
 
 \ifthenelse{\boolean{CS@nominted}}{}{%
@@ -178,16 +209,66 @@
   } % Remove red boxing around syntax errors
 }
 
+\ifthenelse{\boolean{CS@nolistings}}{}{%
+  % Provides mathescape in org-mode example-blocks:
+  % Usage:
+  %   attr_latex: :environment lstlisting
+  %   #+begin_example
+  %    ...
+  %   #+end_example
+  %
+  % https://tex.stackexchange.com/a/149718/156736
+  \RequirePackage{listings} % http://ctan.org/pkg/listings
+  \lstset{%
+    basicstyle=\ttfamily,
+    mathescape
+  }%
+}
+
+\ifthenelse{\boolean{CS@nonameref}}{}{\RequirePackage{nameref}}
+\ifthenelse{\boolean{CS@novarioref}}{}{\RequirePackage{varioref}}
+\ifthenelse{\boolean{CS@nohyperref}}{}{%
+  \RequirePackage{hyperref}
+  \ifCS@noxcolor
+    \colorlet{csurlcolor}{Aquamarine!85!black}
+  \else
+    \colorlet{csurlcolor}{black}
+  \fi
+
+  \AtEndPreamble{
+     \hypersetup{
+       colorlinks=true,
+       linkcolor=black,
+       filecolor=black,
+       citecolor=black,
+       urlcolor=csurlcolor
+    }
+  }
+}
+ 
+% \ifthenelse{\boolean{CS@nocleveref}}{}{\RequirePackage{cleveref}}
+
 \ifthenelse{\boolean{CS@noalgorithm2e}}{}{
   % NOTE: algorithm2e contains non UTF-8 characters.
   % Have to manually save algorithme2e.sty as UTF-8 for compatibility 
   % with LuaLaTeX, which may cause issues with 8-bit encodings and pdflatex.
   % https://tex.stackexchange.com/questions/34814/lualatex-and-algorithm2e/34815
   \RequirePackage[algoruled,linesnumbered]{algorithm2e}
+  \newcommand{\nosemic}{\SetEndCharOfAlgoLine{\relax}}% Drop semi-colon ;
+  \newcommand{\dosemic}{\SetEndCharOfAlgoLine{\string;}}% Reinstate
+  \newcommand{\pushline}{\Indp}% Indent
+  \newcommand{\popline}{\Indm\dosemic}% Undent
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \SetKwComment{Comment}{$\triangleright$\ }{}
+  \SetKwProg{Fn}{Function}{:}{end}
+
+  \unless\ifCS@novarioref
+    \labelformat{algocf}{\textit{alg.}\,(#1)}
+  \fi
 }
 
 
-\ifthenelse{\boolean{CS@nonameref}}{}{\RequirePackage{nameref}}
 \ifthenelse{\boolean{CS@nopdfrender}}{}{\RequirePackage{pdfrender}}
 
 \ifthenelse{\boolean{CS@nonatbib}}{}{%
@@ -199,6 +280,9 @@
   \RequirePackage{tikz}
   \usetikzlibrary{graphs,graphdrawing} % Requires LuaLatex
   \usegdlibrary{UclacsGraph}
+  \usegdlibrary{trees}
+  \usegdlibrary{layered}
+  \newcommand{\vertex}{\node[circle, draw, radius=1cm]}
 }
 
 \ifthenelse{\boolean{CS@noforest}}{}{%
