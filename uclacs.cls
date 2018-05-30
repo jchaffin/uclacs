@@ -1,8 +1,7 @@
 %!TEX TS-program = XeLaTeX
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{uclacs}[2018/02/22  LaTeX Class for CS180 course documents]
+\ProvidesClass{uclacs}[2018/02/22  LaTeX Class for UCLA CS homework assignments.]
 \LoadClass[a4paper, 12pt]{article}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Class Initialization
@@ -19,7 +18,7 @@
 \RequirePackage{lastpage}
 \RequirePackage{kvoptions-patch}
 \RequirePackage{kvoptions}
-
+\RequirePackage{xstring}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Option Declarations
@@ -55,6 +54,7 @@
 \DeclareBoolOption{nomulticol}
 \DeclareBoolOption{noenumitem}
 \DeclareBoolOption{noxcolor}
+\DeclareBoolOption{noamsmath}
 \DeclareBoolOption{noamsthm}
 \DeclareBoolOption{nocolorthms}
 \DeclareBoolOption{nominted}
@@ -67,7 +67,6 @@
 \DeclareBoolOption{nonatbib}
 \DeclareBoolOption{nolua}
 \DeclareBoolOption{noforest}
-
 
 % Other Packages
 \DeclareBoolOption{times}
@@ -114,26 +113,15 @@
 }
 
 \ifthenelse{\boolean{CS@nolatexsym}}{}{\RequirePackage{latexsym}}
-\ifthenelse{\boolean{CS@noamssymb}}{}{%
-  \RequirePackage{amsmath}
-  \RequirePackage{mathptmx}
-  \RequirePackage{amsfonts}
-  \RequirePackage{amssymb}
-  \RequirePackage{calligra}
-  \RequirePackage{calrsfs}
-  \RequirePackage[mathscr]{euscript}
-  \DeclareMathAlphabet{\mathcalligra}{T1}{calligra}{m}{n}
-  \newcommand{\R}{\mathbb{R}}
-  \newcommand{\N}{\mathbb{N}}
-  \newcommand{\Z}{\mathbb{Z}}
-}
 
 \ifthenelse{\boolean{CS@noxcolor}}{}{\RequirePackage[dvipsnames,x11names]{xcolor}}
-
 
 \ifthenelse{\boolean{CS@times}}{
   \RequirePackage{fontspec}
   \setmainfont{Times New Roman}
+  \unless\ifCS@noamsmath
+    \RequirePackage{mathptmx}
+  \fi
 }{%
   \RequirePackage{fontspec}
   \setmainfont[Ligatures=TeX, Numbers={OldStyle, Proportional}]{Linux Libertine}
@@ -146,60 +134,84 @@
 \ifthenelse{\boolean{CS@nomulticol}}{}{\RequirePackage{multicol}}
 \ifthenelse{\boolean{CS@noenumitem}}{}{\RequirePackage{enumitem}}
 
-\ifthenelse{\boolean{CS@noamsthm}}{}{%
-  \RequirePackage{amsthm}
-  \RequirePackage{thmtools}
-  \definecolor{thmtextcolor}{RGB}{0, 175, 236}
-  \definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
+\ifthenelse{\boolean{CS@noamsmath}}{}{%
+  \RequirePackage{amsmath}
 
-  \colorlet{LightGray}{White!90!Periwinkle}
+  \unless\ifCS@noamssymb
 
-  \AtBeginEnvironment{mdframed}{%
-    \def\mdf@footnoterule{}
-  }
-  \declaretheoremstyle[%
-    mdframed={
-      skipabove=8pt,
-      skipbelow=6pt,
-      nobreak=true,
-      hidealllines=true,
-      backgroundcolor={LightGray},
-      innerleftmargin=-3pt,
-      innerrightmargin=5pt,
-      align=center
-    },
-    spaceabove=3pt,spacebelow=3pt,%
-    headfont=\normalfont\bfseries,% 
-    notefont=\normalfont\bfseries,%
-    notebraces={}{. },%
-    headpunct={},%
-    postheadspace=0pt,%
-    postheadhook={\hangindent16pt},
-    headindent=0pt,%
-    bodyfont=\normalfont,%
-    headformat={\llap{\smash{\parbox[t]{0.8in}{\centering \NAME\\
-            \NUMBER}}} \hspace{8pt} \NOTE},%
-  ]{thmsty}
+    \RequirePackage{amsfonts}
+    \RequirePackage{amssymb}
 
+    \RequirePackage{calligra}
+    \RequirePackage{calrsfs}
+    \RequirePackage[mathscr]{euscript} % Provides Euler Script fonts
+    \DeclareMathAlphabet{\mathcalligra}{T1}{calligra}{m}{n}
 
+    % Alias commands
+    \newcommand{\R}{\mathbb{R}}
+    \newcommand{\N}{\mathbb{N}}
+    \newcommand{\Z}{\mathbb{Z}}
+  \fi
 
-  \declaretheorem[
-    style=thmsty,
-    numberwithin=section
-  ]{theorem}
+  \unless\ifCS@noamsthm
 
-  \declaretheorem[
-    style=thmsty,
-    sharenumber=theorem
-  ]{definition}
+    \RequirePackage{amsthm}    % https://ctan.org/pkg/amsthm
+    \RequirePackage{thmtools}  % https://ctan.org/pkg/thmtools
 
-  \declaretheorem[
-    style=thmsty,
-    sharenumber=theorem
-  ]{lemma}
+    \definecolor{thmtextcolor}{RGB}{0, 175, 236}
+    \definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
 
-  \renewcommand\thmt@space{}
+    \colorlet{LightGray}{White!90!Periwinkle}
 
+    \AtBeginEnvironment{mdframed}{%
+      \def\mdf@footnoterule{}
+    } % Remove footnote rule in amsthm environment frames.
+ 
+    \declaretheoremstyle[%
+      mdframed={
+        skipabove=8pt,
+        skipbelow=6pt,
+        nobreak=true,
+        hidealllines=true,
+        backgroundcolor={LightGray},
+        innerleftmargin=-3pt,
+        innerrightmargin=5pt,
+        align=center
+      },
+      spaceabove=3pt,spacebelow=3pt,%
+      headfont=\normalfont\bfseries,% 
+      notefont=\normalfont\bfseries,%
+      notebraces={}{. },%
+      headpunct={},%
+      postheadspace=0pt,%
+      postheadhook={\hangindent16pt},
+      headindent=0pt,%
+      bodyfont=\normalfont,%
+      headformat={\llap{\smash{\parbox[t]{0.8in}{\centering \NAME\\
+              \NUMBER}}} \hspace{8pt} \NOTE},%
+    ]{thmsty}
+
+    % Theorems
+    \declaretheorem[
+      style=thmsty,
+      numberwithin=section
+    ]{theorem}
+
+    % Definitions
+    \declaretheorem[
+      style=thmsty,
+      sharenumber=theorem
+    ]{definition}
+
+    % Lemmas
+    \declaretheorem[
+      style=thmsty,
+      sharenumber=theorem
+    ]{lemma}
+
+    \renewcommand\thmt@space{}
+
+  \fi
 }
 
 \ifthenelse{\boolean{CS@nominted}}{}{%
@@ -225,6 +237,7 @@
   }%
 }
 
+% Cross-References, Smartrefs, and Hyper Links
 \ifthenelse{\boolean{CS@nonameref}}{}{\RequirePackage{nameref}}
 \ifthenelse{\boolean{CS@novarioref}}{}{\RequirePackage{varioref}}
 \ifthenelse{\boolean{CS@nohyperref}}{}{%
@@ -246,32 +259,38 @@
   }
 }
  
-% \ifthenelse{\boolean{CS@nocleveref}}{}{\RequirePackage{cleveref}}
-
+% algorithm2e
 \ifthenelse{\boolean{CS@noalgorithm2e}}{}{
   % NOTE: algorithm2e contains non UTF-8 characters.
   % Have to manually save algorithme2e.sty as UTF-8 for compatibility 
   % with LuaLaTeX, which may cause issues with 8-bit encodings and pdflatex.
   % https://tex.stackexchange.com/questions/34814/lualatex-and-algorithm2e/34815
   \RequirePackage[algoruled,linesnumbered]{algorithm2e}
-  \newcommand{\nosemic}{\SetEndCharOfAlgoLine{\relax}}% Drop semi-colon ;
-  \newcommand{\dosemic}{\SetEndCharOfAlgoLine{\string;}}% Reinstate
+  \newcommand{\nosemic}{\SetEndCharOfAlgoLine{\relax}} % Drop semi-colon ;
+  \newcommand{\dosemic}{\SetEndCharOfAlgoLine{\string;}} % Reinstate
   \newcommand{\pushline}{\Indp}% Indent
-  \newcommand{\popline}{\Indm\dosemic}% Undent
+  \newcommand{\popline}{\Indm\dosemic}% Remove indent
+  % Default Keywords
   \SetKwInOut{Input}{Input}
   \SetKwInOut{Output}{Output}
   \SetKwProg{proc}{Procedure}{}{}
   \SetKwComment{Comment}{$\triangleright$\ }{}
   \SetKwProg{Fn}{Function}{:}{end}
 
+  \newcommand{\forcond}[3]{$#1=#2$ \KwTo $#3$}
+  \newcommand{\forcondi}[2]{\forcond{i}{#1}{#2}}
+  \newcommand{\forcondj}[2]{\forcond{j}{#1}{#2}}
+
+  % Use 'algo_' string prefixes for vref labels.
   \unless\ifCS@novarioref
     \labelformat{algocf}{\textit{alg.}\,(#1)}
   \fi
 }
 
-
+% pdfrender
 \ifthenelse{\boolean{CS@nopdfrender}}{}{\RequirePackage{pdfrender}}
 
+% natbib
 \ifthenelse{\boolean{CS@nonatbib}}{}{%
   \RequirePackage[numbers,comma]{natbib}
   \RequirePackage[version=3]{mhchem}
@@ -295,7 +314,6 @@
     }%
   }%
 }
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
