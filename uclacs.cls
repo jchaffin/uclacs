@@ -396,9 +396,5 @@
   \else
     % Do nothing
   \fi
-  
 }
-
-
-
 
