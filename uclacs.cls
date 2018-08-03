@@ -27,7 +27,7 @@
 \SetupKeyvalOptions{
   family=CS,
   prefix=CS@
-} % use shorter name for family name and prefix
+} % usexo shorter name for family name and prefix
 
 
 
@@ -69,7 +69,8 @@
 \DeclareBoolOption{noforest}
 
 % Other Packages
-\DeclareBoolOption{times}
+\DeclareBoolOption{nofontspec}
+
 \DeclareBoolOption{microtype}
 \DeclareBoolOption{paralist}
 \DeclareBoolOption{setspace}
@@ -83,7 +84,6 @@
 \DeclareStringOption{coursesecnum}
 \DeclareStringOption{studentid}
 \DeclareStringOption{coursename}
-
 
 % Process Options
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
@@ -116,16 +116,16 @@
 
 \ifthenelse{\boolean{CS@noxcolor}}{}{\RequirePackage[dvipsnames,x11names]{xcolor}}
 
-\ifthenelse{\boolean{CS@times}}{
-  \RequirePackage{fontspec}
-  \setmainfont{Times New Roman}
-  \unless\ifCS@noamsmath
-    \RequirePackage{mathptmx}
-  \fi
-}{%
-  \RequirePackage{fontspec}
-  \setmainfont[Ligatures=TeX, Numbers={OldStyle, Proportional}]{Linux Libertine}
-}
+
+% \ifCS@times
+% \RequirePackage{fontspec}
+% \setmainfont{Times New Roman}
+% \unless\ifCS@noamsmath
+% \RequirePackage{mathptmx}
+% \fi
+% \fi
+
+
 
 % Other Default Packages
 \ifthenelse{\boolean{CS@noulem}}{}{\RequirePackage[normalem]{ulem}}
@@ -136,38 +136,34 @@
 
 \ifthenelse{\boolean{CS@noamsmath}}{}{%
   \RequirePackage{amsmath}
-
-  \unless\ifCS@noamssymb
-
-    \RequirePackage{amsfonts}
-    \RequirePackage{amssymb}
-
-    \RequirePackage{calligra}
-    \RequirePackage{calrsfs}
-    \RequirePackage[mathscr]{euscript} % Provides Euler Script fonts
-    \DeclareMathAlphabet{\mathcalligra}{T1}{calligra}{m}{n}
-
-    % Alias commands
-    \newcommand{\R}{\mathbb{R}}
-    \newcommand{\N}{\mathbb{N}}
-    \newcommand{\Z}{\mathbb{Z}}
-  \fi
+  \RequirePackage{fontspec}
+  \RequirePackage{unicode-math}
+  \RequirePackage{hologo}
+  \setmathfont{STIX2Math}[
+    Extension={.otf},
+    Scale=1]
+  \setmainfont{STIX2Text}[
+  Extension={.otf},
+  UprightFont={*-Regular},
+  BoldFont={*-Bold},
+  ItalicFont={*-Italic},
+  BoldItalicFont={*-BoldItalic}]
 
   \unless\ifCS@noamsthm
 
-    \RequirePackage{amsthm}    % https://ctan.org/pkg/amsthm
-    \RequirePackage{thmtools}  % https://ctan.org/pkg/thmtools
+  \RequirePackage{amsthm}    % https://ctan.org/pkg/amsthm
+  \RequirePackage{thmtools}  % https://ctan.org/pkg/thmtools
 
-    \definecolor{thmtextcolor}{RGB}{0, 175, 236}
-    \definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
+  \definecolor{thmtextcolor}{RGB}{0, 175, 236}
+  \definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
 
-    \colorlet{LightGray}{White!90!Periwinkle}
+  \colorlet{LightGray}{White!90!Periwinkle}
 
-    \AtBeginEnvironment{mdframed}{%
-      \def\mdf@footnoterule{}
-    } % Remove footnote rule in amsthm environment frames.
+  \AtBeginEnvironment{mdframed}{%
+    \def\mdf@footnoterule{}
+  } % Remove footnote rule in amsthm environment frames.
  
-    \declaretheoremstyle[%
+  \declaretheoremstyle[%
       mdframed={
         skipabove=8pt,
         skipbelow=6pt,
@@ -353,35 +349,6 @@
 
 \fancyfoot[R]{\thepage\ of \pageref{LastPage}}
 
-\newcommand{\guidelines}{%
-  \hspace{\dimexpr-\fboxrule-\fboxsep\relax}\fbox{%
-    \parbox{0.95\textwidth}{%
-
-      Guidelines: \\
-
-      \begin{itemize}
-      \item Upload your assignments to Gradescope by 5:59PM.
-      \item Follow the instructions mentioned on the course webpage
-        for uploading to Gradescope very carefully (including
-        starting each problem on a new page and matching the pages
-        with the assignments); this makes it easy and smooth for
-        everyone. As the guidelines are simple enough, bad uploads
-        will not be graded.
-      \item You may use results proved in class without proofs as
-        long as you state them clearly.
-      \item Most importantly, make sure you adhere to the policies
-        for academic honesty set out on the
-        course
-        \href{https://raghumeka.github.io/CS180/index.html}{webpage}. The
-        policies will be enforced strictly. Homework is a stepping
-        stone for exams; keep in mind that reasonable partial credit
-        will be awarded and trying the problems will help you a lot
-        for the exams.
-      \end{itemize}
-    }
-  }
-}
-
 \renewcommand{\maketitle}{%
   \bgroup\setlength{\parindent}{0pt}%
   \begin{flushright}
@@ -390,11 +357,5 @@
     Section \CS@coursesecnum \\
     \@date
   \end{flushright}\egroup
-  \ifCS@homework
-    \vspace{5mm} % 5mm vertical space
-    \guidelines
-  \else
-    % Do nothing
-  \fi
 }
 
