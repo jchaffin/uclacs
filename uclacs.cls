@@ -1,6 +1,6 @@
 %!TEX TS-program = XeLaTeX
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{uclacs}[2018/02/22  LaTeX Class for UCLA CS homework assignments.]
+\ProvidesClass{uclacs}[2018/02/22  LaTeX Class for CS-related homework, papers, and assignments.]
 \LoadClass[a4paper, 12pt]{article}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,6 +78,7 @@
 
 % Class Options
 \DeclareBoolOption{noheader}
+
 \DeclareBoolOption{homework}
 \DeclareStringOption{hwnum}
 \DeclareBoolOption{notebook}
@@ -88,6 +89,10 @@
 % Process Options
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrartcl}}
+
+\let\CS@studentid\relax
+\let\CS@coursesecnum\relax
+
 \ProcessKeyvalOptions*
 \ProcessOptions\relax
 
@@ -162,7 +167,7 @@
   \AtBeginEnvironment{mdframed}{%
     \def\mdf@footnoterule{}
   } % Remove footnote rule in amsthm environment frames.
- 
+
   \declaretheoremstyle[%
       mdframed={
         skipabove=8pt,
@@ -175,7 +180,7 @@
         align=center
       },
       spaceabove=3pt,spacebelow=3pt,%
-      headfont=\normalfont\bfseries,% 
+      headfont=\normalfont\bfseries,%
       notefont=\normalfont\bfseries,%
       notebraces={}{. },%
       headpunct={},%
@@ -254,11 +259,11 @@
     }
   }
 }
- 
+
 % algorithm2e
 \ifthenelse{\boolean{CS@noalgorithm2e}}{}{
   % NOTE: algorithm2e contains non UTF-8 characters.
-  % Have to manually save algorithme2e.sty as UTF-8 for compatibility 
+  % Have to manually save algorithme2e.sty as UTF-8 for compatibility
   % with LuaLaTeX, which may cause issues with 8-bit encodings and pdflatex.
   % https://tex.stackexchange.com/questions/34814/lualatex-and-algorithm2e/34815
   \RequirePackage[algoruled,linesnumbered]{algorithm2e}
@@ -353,8 +358,12 @@
   \bgroup\setlength{\parindent}{0pt}%
   \begin{flushright}
     \@author \\
+    \unless\ifx\CS@studentid\relax
     \CS@studentid \\
+    \fi
+    \unless\ifx\CS@coursesecnum\relax
     Section \CS@coursesecnum \\
+    \fi
     \@date
   \end{flushright}\egroup
 }
