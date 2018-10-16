@@ -82,16 +82,20 @@
 \DeclareBoolOption{homework}
 \DeclareStringOption{hwnum}
 \DeclareBoolOption{notebook}
-\DeclareStringOption{coursesecnum}
 \DeclareStringOption{studentid}
 \DeclareStringOption{coursename}
+\DeclareStringOption{coursenumber}
+\DeclareStringOption{profname}
+\DeclareStringOption{profemail}
+\DeclareStringOption{ta}
+% \DeclareStringOption{taemail}
+\DeclareStringOption{dissection}
+\DeclareStringOption{disnumber}
+
 
 % Process Options
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrartcl}}
-
-\let\CS@studentid\relax
-\let\CS@coursesecnum\relax
 
 \ProcessKeyvalOptions*
 \ProcessOptions\relax
@@ -144,15 +148,17 @@
   \RequirePackage{fontspec}
   \RequirePackage{unicode-math}
   \RequirePackage{hologo}
+
   \setmathfont{STIX2Math}[
     Extension={.otf},
     Scale=1]
+
   \setmainfont{STIX2Text}[
-  Extension={.otf},
-  UprightFont={*-Regular},
-  BoldFont={*-Bold},
-  ItalicFont={*-Italic},
-  BoldItalicFont={*-BoldItalic}]
+    Extension={.otf},
+    UprightFont={*-Regular},
+    BoldFont={*-Bold},
+    ItalicFont={*-Italic},
+    BoldItalicFont={*-BoldItalic}]
 
   \unless\ifCS@noamsthm
 
@@ -358,13 +364,6 @@
   \bgroup\setlength{\parindent}{0pt}%
   \begin{flushright}
     \@author \\
-    \unless\ifx\CS@studentid\relax
-    \CS@studentid \\
-    \fi
-    \unless\ifx\CS@coursesecnum\relax
-    Section \CS@coursesecnum \\
-    \fi
     \@date
   \end{flushright}\egroup
 }
-
