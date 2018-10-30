@@ -1,7 +1,6 @@
 %!TEX TS-program = XeLaTeX
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{uclacs}[2018/02/22  LaTeX Class for CS-related homework, papers, and assignments.]
-\LoadClass[a4paper, 12pt]{article}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Class Initialization
@@ -9,11 +8,11 @@
 \RequirePackage{ifthen}
 \RequirePackage{calc}
 \RequirePackage{ifpdf}
+\RequirePackage{ifluatex}
 \RequirePackage{remreset}
 \RequirePackage{etoolbox}
 \RequirePackage{changepage}
 \RequirePackage[utf8x]{inputenc}
-\RequirePackage[left=1in, right=1in, top=1.3in, bottom=1in]{geometry}
 \RequirePackage{fancyhdr}
 \RequirePackage{lastpage}
 \RequirePackage{kvoptions-patch}
@@ -28,8 +27,6 @@
   family=CS,
   prefix=CS@
 } % usexo shorter name for family name and prefix
-
-
 
 % Org-mode Default Package Options
 \DeclareBoolOption{nofontenc}
@@ -70,7 +67,6 @@
 
 % Other Packages
 \DeclareBoolOption{nofontspec}
-
 \DeclareBoolOption{microtype}
 \DeclareBoolOption{paralist}
 \DeclareBoolOption{setspace}
@@ -78,7 +74,6 @@
 
 % Class Options
 \DeclareBoolOption{noheader}
-
 \DeclareBoolOption{homework}
 \DeclareStringOption{hwnum}
 \DeclareBoolOption{notebook}
@@ -92,20 +87,34 @@
 \DeclareStringOption{dissection}
 \DeclareStringOption{disnumber}
 
+\DeclareBoolOption{usenix}
 
 % Process Options
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrartcl}}
-
+%% Fallback
+\DeclareDefaultOption{%
+  \ifx\CurrentOptionValue\relax
+  % Expand \CurrentOption
+  \expandafter\PassOptionsToClass
+  \expandafter{\CurrentOption}{article}%
+  \else
+    \@unknownoptionerror
+  \fi
+}
 \ProcessKeyvalOptions*
-\ProcessOptions\relax
+
+
+\ifCS@usenix
+  \LoadClass[letterpaper,twocolumn,10pt]{article}
+  \RequirePackage{usenix,epsfig,endnotes}  
+\else
+  \LoadClass[12pt, a4paper]{article}
+\fi
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load Packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 % Org Mode Default Packages
 \ifthenelse{\boolean{CS@nofontenc}}{}{\RequirePackage[T1]{fontenc}}
 \ifthenelse{\boolean{CS@nofixltx2e}}{}{\RequirePackage{fixltx2e}}
@@ -122,19 +131,9 @@
 }
 
 \ifthenelse{\boolean{CS@nolatexsym}}{}{\RequirePackage{latexsym}}
-
-\ifthenelse{\boolean{CS@noxcolor}}{}{\RequirePackage[dvipsnames,x11names]{xcolor}}
-
-
-% \ifCS@times
-% \RequirePackage{fontspec}
-% \setmainfont{Times New Roman}
-% \unless\ifCS@noamsmath
-% \RequirePackage{mathptmx}
-% \fi
-% \fi
-
-
+\ifthenelse{\boolean{CS@noxcolor}}{}{%
+ \RequirePackage[dvipsnames,x11names]{xcolor}
+}
 
 % Other Default Packages
 \ifthenelse{\boolean{CS@noulem}}{}{\RequirePackage[normalem]{ulem}}
@@ -283,8 +282,8 @@
   \SetKwProg{proc}{Procedure}{}{}
   \SetKwComment{Comment}{$\triangleright$\ }{}
   \SetKwProg{Fn}{Function}{:}{end}
-
   \newcommand{\forcond}[3]{$#1=#2$ \KwTo $#3$}
+
   \newcommand{\forcondi}[2]{\forcond{i}{#1}{#2}}
   \newcommand{\forcondj}[2]{\forcond{j}{#1}{#2}}
 
@@ -304,11 +303,14 @@
 }
 
 \ifthenelse{\boolean{CS@nolua}}{}{%
+
   \RequirePackage{tikz}
-  \usetikzlibrary{graphs,graphdrawing} % Requires LuaLatex
-  \usegdlibrary{UclacsGraph}
-  \usegdlibrary{trees}
-  \usegdlibrary{layered}
+  \ifluatex
+    \usetikzlibrary{graphs,graphdrawing} % Requires LuaLatex
+    \usegdlibrary{UclacsGraph}
+    \usegdlibrary{trees}
+    \usegdlibrary{layered}
+  \fi
   \newcommand{\vertex}{\node[circle, draw, radius=1cm]}
 }
 
@@ -322,48 +324,48 @@
   }%
 }
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document Formatting
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\def\doctitle{\@title}
 
-\ifCS@homework
-  \renewcommand{\doctitle}{\CS@coursename : Homework \CS@hwnum}
-\fi
+% \def\doctitle{\@title}
 
-\pagestyle{fancy}
-\fancyhead{}
-\fancyfoot{}
+% \ifCS@homework
+%   \renewcommand{\doctitle}{\CS@coursename : Homework \CS@hwnum}
+% \fi
 
-\ifCS@noheader
-  \renewcommand{\headrulewidth}{0pt}
-\fi
+% \pagestyle{fancy}
+% \fancyhead{}
+% \fancyfoot{}
 
-\fancyhead[L]{%
-  \ifthenelse{\value{page}=1}{%
-    \large\textbf{\doctitle}
-    \ifCS@notebook
-    \\ Course Notebook
-    \fi
-  }{%
-    \unless\ifCS@homework
-      \CS@coursename
-    \fi
-  }%
-}
+% \ifCS@noheader
+%   \renewcommand{\headrulewidth}{0pt}
+% \fi
 
-\fancyhead[R]{%
-  \ifthenelse{\value{page}=1}{}{\rightmark}
-}
+% \fancyhead[L]{%
+%   \ifthenelse{\value{page}=1}{%
+%     \large\textbf{\doctitle}
+%     \ifCS@notebook
+%     \\ Course Notebook
+%     \fi
+%   }{%
+%     \unless\ifCS@homework
+%       \CS@coursename
+%     \fi
+%   }%
+% }
 
-\fancyfoot[R]{\thepage\ of \pageref{LastPage}}
+% \fancyhead[R]{%
+%   \ifthenelse{\value{page}=1}{}{\rightmark}
+% }
 
-\renewcommand{\maketitle}{%
-  \bgroup\setlength{\parindent}{0pt}%
-  \begin{flushright}
-    \@author \\
-    \@date
-  \end{flushright}\egroup
-}
+% \fancyfoot[R]{\thepage\ of \pageref{LastPage}}
+
+% \renewcommand{\maketitle}{%
+%   \bgroup\setlength{\parindent}{0pt}%
+%   \begin{flushright}
+%     \@author \\
+%     \@date
+%   \end{flushright}\egroup
+% }
