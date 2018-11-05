@@ -147,14 +147,14 @@
   \RequirePackage{fontspec}
   \RequirePackage{unicode-math}
   \RequirePackage{hologo}
-
-  \setmathfont{STIX2Math}[
-    Extension={.otf},
+  % \RequirePackage{stix2-otf}
+  \setmathfont{STIXTwoMath}[
+    Extension={.ttf},
     Scale=1]
 
-  \setmainfont{STIX2Text}[
-    Extension={.otf},
-    UprightFont={*-Regular},
+  \setmainfont{STIXTwoText}[
+    Extension={.ttf},
+    % UprightFont={*-Regular}
     BoldFont={*-Bold},
     ItalicFont={*-Italic},
     BoldItalicFont={*-BoldItalic}]
@@ -265,6 +265,7 @@
   }
 }
 
+\RequirePackage{booktabs}
 % algorithm2e
 \ifthenelse{\boolean{CS@noalgorithm2e}}{}{
   % NOTE: algorithm2e contains non UTF-8 characters.
