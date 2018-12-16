@@ -26,7 +26,7 @@
 \SetupKeyvalOptions{
   family=CS,
   prefix=CS@
-} % usexo shorter name for family name and prefix
+} % use shorter name for family name and prefix
 
 % Org-mode Default Package Options
 \DeclareBoolOption{nofontenc}
@@ -105,7 +105,7 @@
 
 \ifCS@usenix
   \LoadClass[letterpaper,twocolumn,10pt]{article}
-  \RequirePackage{usenix,epsfig,endnotes}  
+  \RequirePackage{usenix,epsfig,endnotes}
 \else
   \LoadClass[12pt, a4paper]{article}
 \fi
