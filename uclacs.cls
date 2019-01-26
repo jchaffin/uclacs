@@ -36,7 +36,6 @@
 \DeclareBoolOption{nofloat}
 \DeclareBoolOption{nowrapfig}
 \DeclareBoolOption{nosoul}
-\DeclareBoolOption{notextcomp}
 \DeclareBoolOption{nomarvosym}
 \DeclareBoolOption{nowasysym}
 \DeclareBoolOption{nointegrals}
@@ -116,14 +115,12 @@
 %% Load Packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Org Mode Default Packages
-\ifthenelse{\boolean{CS@nofontenc}}{}{\RequirePackage[T1]{fontenc}}
-\ifthenelse{\boolean{CS@nofixltx2e}}{}{\RequirePackage{fixltx2e}}
+
 \ifthenelse{\boolean{CS@nographicx}}{}{\RequirePackage{graphicx}}
 \ifthenelse{\boolean{CS@nolongtable}}{}{\RequirePackage{longtable}}
 \ifthenelse{\boolean{CS@nofloat}}{}{\RequirePackage{float}}
 \ifthenelse{\boolean{CS@nowrapfig}}{}{\RequirePackage{wrapfig}}
 \ifthenelse{\boolean{CS@nosoul}}{}{\RequirePackage{soul}}
-\ifthenelse{\boolean{CS@notextcomp}}{}{\RequirePackage{textcomp}}
 \ifthenelse{\boolean{CS@nomarvosym}}{}{\RequirePackage{marvosym}}
 \ifthenelse{\boolean{CS@nointegrals}}{%
   {\RequirePackage{nointegrals}}%
@@ -142,106 +139,103 @@
 \ifthenelse{\boolean{CS@nomulticol}}{}{\RequirePackage{multicol}}
 \ifthenelse{\boolean{CS@noenumitem}}{}{\RequirePackage{enumitem}}
 
-\ifthenelse{\boolean{CS@noamsmath}}{}{%
-  \RequirePackage{amsmath}
-  \RequirePackage{fontspec}
-  \RequirePackage{unicode-math}
-  \RequirePackage{hologo}
-  % \RequirePackage{stix2-otf}
-  \setmathfont{STIXTwoMath}[
-    Extension={.ttf},
-    Scale=1]
+% \RequirePackage[osf]{XCharter} %
 
-  \setmainfont{STIXTwoText}[
-    Extension={.ttf},
-    % UprightFont={*-Regular}
-    BoldFont={*-Bold},
-    ItalicFont={*-Italic},
-    BoldItalicFont={*-BoldItalic}]
+\RequirePackage{amsmath}
+\RequirePackage{fontspec}
+\RequirePackage{unicode-math}
 
-  \unless\ifCS@noamsthm
+\RequirePackage{cabin}
+\RequirePackage{xpatch}
 
-  \RequirePackage{amsthm}    % https://ctan.org/pkg/amsthm
-  \RequirePackage{thmtools}  % https://ctan.org/pkg/thmtools
+\RequirePackage{minted}
+\AtBeginEnvironment{minted}{%
+  \renewcommand{\fcolorbox}[4][]{#4}
+} % Remove red boxing around syntax errors
 
-  \definecolor{thmtextcolor}{RGB}{0, 175, 236}
-  \definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
 
-  \colorlet{LightGray}{White!90!Periwinkle}
+\setmainfont{STIX Two Text}
+\setmathfont{STIX Two Math}[StylisticSet=02, StylisticSet=08]
+\setmonofont[Scale=MatchUppercase]{DejaVu Sans Mono}
 
-  \AtBeginEnvironment{mdframed}{%
-    \def\mdf@footnoterule{}
-  } % Remove footnote rule in amsthm environment frames.
+% \RequirePackage[greek.polutoniko,english]{babel}
+% \RequirePackage[scale=1.15,p,osf]{stickstootext}
+\RequirePackage{amsthm}    % https://ctan.org/pkg/amsthm
+% \RequirePackage[stix2,vvarbb]{newtxmath}
+% \RequirePackage[no-math]{fontspec}
 
-  \declaretheoremstyle[%
-      mdframed={
-        skipabove=8pt,
-        skipbelow=6pt,
-        nobreak=true,
-        hidealllines=true,
-        backgroundcolor={LightGray},
-        innerleftmargin=-3pt,
-        innerrightmargin=5pt,
-        align=center
-      },
-      spaceabove=3pt,spacebelow=3pt,%
-      headfont=\normalfont\bfseries,%
-      notefont=\normalfont\bfseries,%
-      notebraces={}{. },%
-      headpunct={},%
-      postheadspace=0pt,%
-      postheadhook={\hangindent16pt},
-      headindent=0pt,%
-      bodyfont=\normalfont,%
-      headformat={\llap{\smash{\parbox[t]{0.8in}{\centering \NAME\\
-              \NUMBER}}} \hspace{8pt} \NOTE},%
+\RequirePackage{thmtools}  % https://ctan.org/pkg/thmtools
+
+\definecolor{thmtextcolor}{RGB}{0, 175, 236}
+\definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
+
+\colorlet{LightGray}{White!90!Periwinkle}
+
+\AtBeginEnvironment{mdframed}{%
+  \def\mdf@footnoterule{}
+} % Remove footnote rule in amsthm environment frames.
+
+\declaretheoremstyle[%
+    mdframed={
+      skipabove=8pt,
+      skipbelow=6pt,
+      nobreak=true,
+      hidealllines=true,
+      backgroundcolor={LightGray},
+      innerleftmargin=-3pt,
+      innerrightmargin=5pt,
+      align=center
+    },
+    spaceabove=3pt,spacebelow=3pt,%
+    headfont=\normalfont\bfseries,%
+    notefont=\normalfont\bfseries,%
+    notebraces={}{. },%
+    headpunct={},%
+    postheadspace=0pt,%
+    postheadhook={\hangindent16pt},
+    headindent=0pt,%
+    bodyfont=\normalfont,%
+    headformat={\llap{\smash{\parbox[t]{0.8in}{\centering \NAME\\
+            \NUMBER}}} \hspace{8pt} \NOTE},%
     ]{thmsty}
 
-    % Theorems
-    \declaretheorem[
-      style=thmsty,
-      numberwithin=section
-    ]{theorem}
+\declaretheorem[
 
-    % Definitions
-    \declaretheorem[
-      style=thmsty,
-      sharenumber=theorem
-    ]{definition}
 
-    % Lemmas
-    \declaretheorem[
-      style=thmsty,
-      sharenumber=theorem
-    ]{lemma}
 
-    \renewcommand\thmt@space{}
+  % Theorems
+  \declaretheorem[
+    style=thmsty,
+    numberwithin=section
+  ]{theorem}
 
-  \fi
-}
+  % Definitions
+  \declaretheorem[
+    style=thmsty,
+  ]{definition}
 
-\ifthenelse{\boolean{CS@nominted}}{}{%
-  \RequirePackage{minted}
-  \AtBeginEnvironment{minted}{%
-    \renewcommand{\fcolorbox}[4][]{#4}
-  } % Remove red boxing around syntax errors
-}
+  % Lemmas
+  \declaretheorem[
+    style=thmsty,
+    sharenumber=theorem
+  ]{lemma}
 
-\ifthenelse{\boolean{CS@nolistings}}{}{%
-  % Provides mathescape in org-mode example-blocks:
-  % Usage:
-  %   attr_latex: :environment lstlisting
-  %   #+begin_example
-  %    ...
-  %   #+end_example
-  %
-  % https://tex.stackexchange.com/a/149718/156736
-  \RequirePackage{listings} % http://ctan.org/pkg/listings
-  \lstset{%
-    basicstyle=\ttfamily,
-    mathescape
-  }%
-}
+
+
+
+% Provides mathescape in org-mode example-blocks:
+% Usage:
+%   attr_latex: :environment lstlisting
+%   #+begin_example
+%    ...
+%   #+end_example
+%
+% https://tex.stackexchange.com/a/149718/156736
+\RequirePackage{listings} % http://ctan.org/pkg/listings
+\lstset{%
+  basicstyle=\ttfamily,
+  mathescape
+}%
 
 % Cross-References, Smartrefs, and Hyper Links
 \ifthenelse{\boolean{CS@nonameref}}{}{\RequirePackage{nameref}}
@@ -267,7 +261,11 @@
 
 \RequirePackage{booktabs}
 % algorithm2e
-\ifthenelse{\boolean{CS@noalgorithm2e}}{}{
+\ifthenelse{\boolean{CS@noalgorithm2e}}{
+
+  \RequirePackage{algpseudocode}
+  \RequirePackage{algorithm}
+}{
   % NOTE: algorithm2e contains non UTF-8 characters.
   % Have to manually save algorithme2e.sty as UTF-8 for compatibility
   % with LuaLaTeX, which may cause issues with 8-bit encodings and pdflatex.
@@ -287,7 +285,6 @@
 
   \newcommand{\forcondi}[2]{\forcond{i}{#1}{#2}}
   \newcommand{\forcondj}[2]{\forcond{j}{#1}{#2}}
-
   % Use 'algo_' string prefixes for vref labels.
   \unless\ifCS@novarioref
     \labelformat{algocf}{\textit{alg.}\,(#1)}
@@ -325,16 +322,11 @@
   }%
 }
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document Formatting
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-% \def\doctitle{\@title}
-
-% \ifCS@homework
-%   \renewcommand{\doctitle}{\CS@coursename : Homework \CS@hwnum}
-% \fi
 
 % \pagestyle{fancy}
 % \fancyhead{}
@@ -343,19 +335,6 @@
 % \ifCS@noheader
 %   \renewcommand{\headrulewidth}{0pt}
 % \fi
-
-% \fancyhead[L]{%
-%   \ifthenelse{\value{page}=1}{%
-%     \large\textbf{\doctitle}
-%     \ifCS@notebook
-%     \\ Course Notebook
-%     \fi
-%   }{%
-%     \unless\ifCS@homework
-%       \CS@coursename
-%     \fi
-%   }%
-% }
 
 % \fancyhead[R]{%
 %   \ifthenelse{\value{page}=1}{}{\rightmark}
@@ -369,4 +348,16 @@
 %     \@author \\
 %     \@date
 %   \end{flushright}\egroup
+% }
+% \fancyhead[L]{%
+%   \ifthenelse{\value{page}=1}{%
+%     \large\textbf{\doctitle}
+%     \ifCS@notebook
+%     \\ Course Notebook
+%     \fi
+%   }{%
+%     \unless\ifCS@homework
+%       \CS@coursename
+%     \fi
+%   }%
 % }
