@@ -101,15 +101,12 @@
 }
 \ProcessKeyvalOptions*
 
-
 \ifCS@usenix
   \LoadClass[letterpaper,twocolumn,10pt]{article}
   \RequirePackage{usenix,epsfig,endnotes}
 \else
   \LoadClass[12pt, a4paper]{article}
 \fi
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load Packages
@@ -138,39 +135,24 @@
 \ifthenelse{\boolean{CS@nosubcaption}}{}{\RequirePackage{subcaption}}
 \ifthenelse{\boolean{CS@nomulticol}}{}{\RequirePackage{multicol}}
 \ifthenelse{\boolean{CS@noenumitem}}{}{\RequirePackage{enumitem}}
-
 % \RequirePackage[osf]{XCharter} %
-
-\RequirePackage{amsmath}
+\RequirePackage[fleqn,tbtags]{mathtools}
 \RequirePackage{fontspec}
 \RequirePackage{unicode-math}
-
+\setmainfont{STIX Two Text}
+\setmathfont{STIX Two Math}[StylisticSet=02, StylisticSet=08]
+\setmonofont[Scale=MatchUppercase]{DejaVu Sans Mono}
 \RequirePackage{cabin}
 \RequirePackage{xpatch}
-
 \RequirePackage{minted}
 \AtBeginEnvironment{minted}{%
   \renewcommand{\fcolorbox}[4][]{#4}
 } % Remove red boxing around syntax errors
-
-
-\setmainfont{STIX Two Text}
-\setmathfont{STIX Two Math}[StylisticSet=02, StylisticSet=08]
-\setmonofont[Scale=MatchUppercase]{DejaVu Sans Mono}
-
-% \RequirePackage[greek.polutoniko,english]{babel}
-% \RequirePackage[scale=1.15,p,osf]{stickstootext}
 \RequirePackage{amsthm}    % https://ctan.org/pkg/amsthm
-% \RequirePackage[stix2,vvarbb]{newtxmath}
-% \RequirePackage[no-math]{fontspec}
-
 \RequirePackage{thmtools}  % https://ctan.org/pkg/thmtools
-
 \definecolor{thmtextcolor}{RGB}{0, 175, 236}
 \definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
-
 \colorlet{LightGray}{White!90!Periwinkle}
-
 \AtBeginEnvironment{mdframed}{%
   \def\mdf@footnoterule{}
 } % Remove footnote rule in amsthm environment frames.
@@ -197,33 +179,14 @@
     bodyfont=\normalfont,%
     headformat={\llap{\smash{\parbox[t]{0.8in}{\centering \NAME\\
             \NUMBER}}} \hspace{8pt} \NOTE},%
-    ]{thmsty}
-
-\declaretheorem[
-
-
-
+    ]{thmsty} % theorem style
   % Theorems
-  \declaretheorem[
-    style=thmsty,
-    numberwithin=section
-  ]{theorem}
-
+  \declaretheorem[ style=thmsty, numberwithin=section ]{theorem}
   % Definitions
-  \declaretheorem[
-    style=thmsty,
-  ]{definition}
+  \declaretheorem[style=thmsty, numberwithin=section]{definition} % Definitions
+  \declaretheorem[style=thmsty, sharenumber=theorem]{lemma}  % Lemmas
 
-  % Lemmas
-  \declaretheorem[
-    style=thmsty,
-    sharenumber=theorem
-  ]{lemma}
-
-
-
-
-% Provides mathescape in org-mode example-blocks:
+  % Provides mathescape in org-mode example-blocks:
 % Usage:
 %   attr_latex: :environment lstlisting
 %   #+begin_example
@@ -299,9 +262,20 @@
   \RequirePackage[numbers,comma]{natbib}
   \RequirePackage[version=3]{mhchem}
 }
-
+\RequirePackage{makeidx}
+\renewenvironment{theindex}
+{\section*{\indexname}%
+  \@mkboth{\MakeUppercase\indexname}%
+  {\MakeUppercase\indexname}%
+  \thispagestyle{plain}\parindent\z@
+  \parskip\z@ \@plus .3\p@\relax
+  \columnseprule \z@
+  \columnsep 35\p@
+  \let\item\@idxitem}
+{}
+\RequirePackage{glossaries}
+\makeglossaries
 \ifthenelse{\boolean{CS@nolua}}{}{%
-
   \RequirePackage{tikz}
   \ifluatex
     \usetikzlibrary{graphs,graphdrawing} % Requires LuaLatex
@@ -322,12 +296,9 @@
   }%
 }
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document Formatting
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 % \pagestyle{fancy}
 % \fancyhead{}
 % \fancyfoot{}
