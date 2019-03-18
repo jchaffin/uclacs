@@ -103,9 +103,10 @@
 
 \ifCS@usenix
   \LoadClass[letterpaper,twocolumn,10pt]{article}
-  \RequirePackage{usenix,epsfig,endnotes}
 \else
-  \LoadClass[12pt, a4paper]{article}
+\LoadClass[12pt, a4paper]{article}
+\RequirePackage{geometry}
+\geometry{letterpaper,head=13pt, marginparwidth=6pc,heightrounded}
 \fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -204,6 +205,7 @@
 \ifthenelse{\boolean{CS@nonameref}}{}{\RequirePackage{nameref}}
 \ifthenelse{\boolean{CS@novarioref}}{}{\RequirePackage{varioref}}
 \ifthenelse{\boolean{CS@nohyperref}}{}{%
+  \RequirePackage[hyphens,spaces,obeyspaces]{url}
   \RequirePackage{hyperref}
   \ifCS@noxcolor
     \colorlet{csurlcolor}{Aquamarine!85!black}
@@ -211,13 +213,20 @@
     \colorlet{csurlcolor}{black}
   \fi
 
+  \urlstyle{rm}
+  \renewcommand\UrlFont{\color{MidnightBlue}\footnotesize\rmfamily}
+  \let\UrlSpecialsOld\UrlSpecials
+  \def\UrlSpecials{\UrlSpecialsOld\do\/{\Url@slash}\do\_{\Url@underscore}}%
+  \def\Url@slash{\@ifnextchar/{\kern-.11em\mathchar47\kern-.2em}%
+    {\kern-.0em\mathchar47\kern-.08em\penalty\UrlBigBreakPenalty}}
+  \def\Url@underscore{\nfss@text{\leavevmode \kern.06em\vbox{\hrule\@width.3em}}}
   \AtEndPreamble{
-     \hypersetup{
-       colorlinks=true,
-       linkcolor=black,
-       filecolor=black,
-       citecolor=black,
-       urlcolor=csurlcolor
+    \hypersetup{
+      colorlinks=true,
+      linkcolor=black,
+      filecolor=black,
+      citecolor=black,
+      urlcolor=csurlcolor
     }
   }
 }
@@ -261,8 +270,84 @@
 \ifthenelse{\boolean{CS@nonatbib}}{}{%
   \RequirePackage[numbers,comma]{natbib}
   \RequirePackage[version=3]{mhchem}
+  \renewcommand{\bibsection}{%
+     \section*{\refname}%
+     \phantomsection\addcontentsline{toc}{section}{\refname}%
+  }
+  \renewcommand\setcitestyle[1]{
+  \@for\@tempa:=#1\do
+  {\def\@tempb{round}\ifx\@tempa\@tempb
+     \renewcommand\NAT@open{(}\renewcommand\NAT@close{)}\fi
+   \def\@tempb{square}\ifx\@tempa\@tempb
+     \renewcommand\NAT@open{[}\renewcommand\NAT@close{]}\fi
+   \def\@tempb{angle}\ifx\@tempa\@tempb
+     \renewcommand\NAT@open{$<$}\renewcommand\NAT@close{$>$}\fi
+   \def\@tempb{curly}\ifx\@tempa\@tempb
+     \renewcommand\NAT@open{\{}\renewcommand\NAT@close{\}}\fi
+   \def\@tempb{semicolon}\ifx\@tempa\@tempb
+     \renewcommand\NAT@sep{;}\fi
+   \def\@tempb{colon}\ifx\@tempa\@tempb
+     \renewcommand\NAT@sep{;}\fi
+   \def\@tempb{comma}\ifx\@tempa\@tempb
+     \renewcommand\NAT@sep{,}\fi
+   \def\@tempb{authoryear}\ifx\@tempa\@tempb
+     \NAT@numbersfalse\fi
+   \def\@tempb{numbers}\ifx\@tempa\@tempb
+     \NAT@numberstrue\NAT@superfalse\fi
+   \def\@tempb{super}\ifx\@tempa\@tempb
+     \NAT@numberstrue\NAT@supertrue\fi
+   \def\@tempb{nobibstyle}\ifx\@tempa\@tempb
+     \let\bibstyle=\@gobble\fi
+   \def\@tempb{bibstyle}\ifx\@tempa\@tempb
+     \let\bibstyle=\@citestyle\fi
+   \def\@tempb{sort}\ifx\@tempa\@tempb
+     \def\NAT@sort{\@ne}\fi
+   \def\@tempb{nosort}\ifx\@tempa\@tempb
+     \def\NAT@sort{\z@}\fi
+   \def\@tempb{compress}\ifx\@tempa\@tempb
+     \def\NAT@cmprs{\@ne}\fi
+   \def\@tempb{nocompress}\ifx\@tempa\@tempb
+     \def\NAT@cmprs{\@z}\fi
+   \def\@tempb{sort&compress}\ifx\@tempa\@tempb
+     \def\NAT@sort{\@ne}\def\NAT@cmprs{\@ne}\fi
+   \def\@tempb{mcite}\ifx\@tempa\@tempb
+     \let\NAT@merge\@ne\fi
+   \def\@tempb{merge}\ifx\@tempa\@tempb
+     \@ifnum{\NAT@merge<\tw@}{\let\NAT@merge\tw@}{}\fi
+   \def\@tempb{elide}\ifx\@tempa\@tempb
+     \@ifnum{\NAT@merge<\thr@@}{\let\NAT@merge\thr@@}{}\fi
+   \def\@tempb{longnamesfirst}\ifx\@tempa\@tempb
+     \NAT@longnamestrue\fi
+   \def\@tempb{nonamebreak}\ifx\@tempa\@tempb
+     \def\NAT@nmfmt#1{\mbox{\NAT@up#1}}\fi
+   \expandafter\NAT@find@eq\@tempa=\relax\@nil
+   \if\@tempc\relax\else
+     \expandafter\NAT@rem@eq\@tempc
+     \def\@tempb{open}\ifx\@tempa\@tempb
+      \xdef\NAT@open{\@tempc}\fi
+     \def\@tempb{close}\ifx\@tempa\@tempb
+      \xdef\NAT@close{\@tempc}\fi
+     \def\@tempb{aysep}\ifx\@tempa\@tempb
+      \xdef\NAT@aysep{\@tempc}\fi
+     \def\@tempb{yysep}\ifx\@tempa\@tempb
+      \xdef\NAT@yrsep{\@tempc}\fi
+     \def\@tempb{notesep}\ifx\@tempa\@tempb
+      \xdef\NAT@cmt{\@tempc}\fi
+     \def\@tempb{citesep}\ifx\@tempa\@tempb
+      \xdef\NAT@sep{\@tempc}\fi
+  }%
+  \NAT@@setcites
+  }
+  \renewcommand\citestyle[1]{%
+    \ifcsname bibstyle@#1\endcsname%
+    \csname bibstyle@#1\endcsname\let\bibstyle\@gobble%
+    \else%
+    \@latex@error{Undefined `#1' citestyle}%
+    \fi
+  }%
 }
 \RequirePackage{makeidx}
+\makeindex
 \renewenvironment{theindex}
 {\section*{\indexname}%
   \@mkboth{\MakeUppercase\indexname}%
@@ -273,7 +358,8 @@
   \columnsep 35\p@
   \let\item\@idxitem}
 {}
-\RequirePackage{glossaries}
+\AtEndPreamble{\renewcommand{\indexname}{}}
+\RequirePackage[acronym]{glossaries}
 \makeglossaries
 \ifthenelse{\boolean{CS@nolua}}{}{%
   \RequirePackage{tikz}
@@ -299,36 +385,27 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document Formatting
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \pagestyle{fancy}
-% \fancyhead{}
-% \fancyfoot{}
+\newcommand*\titlehrule[1][0.4pt]{%
+  \leavevmode\leaders\hrule height#1\hfill\kern0pt
+}
 
-% \ifCS@noheader
-%   \renewcommand{\headrulewidth}{0pt}
-% \fi
-
-% \fancyhead[R]{%
-%   \ifthenelse{\value{page}=1}{}{\rightmark}
-% }
-
-% \fancyfoot[R]{\thepage\ of \pageref{LastPage}}
-
-% \renewcommand{\maketitle}{%
-%   \bgroup\setlength{\parindent}{0pt}%
-%   \begin{flushright}
-%     \@author \\
-%     \@date
-%   \end{flushright}\egroup
-% }
-% \fancyhead[L]{%
-%   \ifthenelse{\value{page}=1}{%
-%     \large\textbf{\doctitle}
-%     \ifCS@notebook
-%     \\ Course Notebook
-%     \fi
-%   }{%
-%     \unless\ifCS@homework
-%       \CS@coursename
-%     \fi
-%   }%
-% }
+\ifCS@usenix
+\RequirePackage{usenix}
+\else
+\renewcommand{\maketitle}[0]{
+  \bgroup\setlength{\parindent}{0pt}%
+  \@title\\
+  \smallskip\noindent\titlehrule[0.4mm]
+  \begin{flushright}
+    \@author\\
+    \@date\\
+    \unless\ifx\CS@profname\@empty
+    \CS@profname
+    \fi
+    \unless\ifx\CS@coursenumber\@empty
+    \CS@coursenumber \\
+    \fi
+  \end{flushright}\egroup
+}
+\fi
+\endinput
