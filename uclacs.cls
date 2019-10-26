@@ -139,6 +139,7 @@
 % \RequirePackage[osf]{XCharter} %
 \RequirePackage[fleqn,tbtags]{mathtools}
 \RequirePackage{fontspec}
+\RequirePackage{amsfonts}
 \RequirePackage{unicode-math}
 \setmainfont{STIX Two Text}
 \setmathfont{STIX Two Math}[StylisticSet=02, StylisticSet=08]
@@ -160,29 +161,30 @@
 
 \declaretheoremstyle[%
     mdframed={
-      skipabove=8pt,
-      skipbelow=6pt,
+      splittopskip=20pt,
+      skipabove=16pt,
       nobreak=true,
       hidealllines=true,
       backgroundcolor={LightGray},
       innerleftmargin=-3pt,
-      innerrightmargin=5pt,
-      align=center
+      innerrightmargin=2pt,
+      innertopmargin=6pt,
+      innerbottommargin=6pt,
     },
     spaceabove=3pt,spacebelow=3pt,%
     headfont=\normalfont\bfseries,%
     notefont=\normalfont\bfseries,%
     notebraces={}{. },%
     headpunct={},%
-    postheadspace=0pt,%
-    postheadhook={\hangindent16pt},
-    headindent=0pt,%
+    postheadhook={\hangindent16pt}, % \\ removed
+    postheadspace=\newline,%
+    headindent=5pt,%
     bodyfont=\normalfont,%
     headformat={\llap{\smash{\parbox[t]{0.8in}{\centering \NAME\\
             \NUMBER}}} \hspace{8pt} \NOTE},%
     ]{thmsty} % theorem style
   % Theorems
-  \declaretheorem[ style=thmsty, numberwithin=section ]{theorem}
+  \declaretheorem[style=thmsty, numberwithin=section ]{theorem}
   % Definitions
   \declaretheorem[style=thmsty, numberwithin=section]{definition} % Definitions
   \declaretheorem[style=thmsty, sharenumber=theorem]{lemma}  % Lemmas
@@ -232,31 +234,57 @@
 }
 
 \RequirePackage{booktabs}
+\RequirePackage{rail}
+\newenvironment{figrail}{\begin{figure}\begin{rail}}{\end{rail}\end{figure}}
+
 % algorithm2e
 \ifthenelse{\boolean{CS@noalgorithm2e}}{
 
   \RequirePackage{algpseudocode}
   \RequirePackage{algorithm}
+
 }{
   % NOTE: algorithm2e contains non UTF-8 characters.
   % Have to manually save algorithme2e.sty as UTF-8 for compatibility
   % with LuaLaTeX, which may cause issues with 8-bit encodings and pdflatex.
   % https://tex.stackexchange.com/questions/34814/lualatex-and-algorithm2e/34815
+  \RequirePackage{clrscode3e}
   \RequirePackage[algoruled,linesnumbered]{algorithm2e}
+% Default Keywords
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{output}
+  \SetKwProg{proc}{Procedure}{}{}
+  \SetKwComment{Comment}{ $\triangleright$\ }{}
+  \SetKwProg{Fn}{Function}{:}{end}
   \newcommand{\nosemic}{\SetEndCharOfAlgoLine{\relax}} % Drop semi-colon ;
   \newcommand{\dosemic}{\SetEndCharOfAlgoLine{\string;}} % Reinstate
   \newcommand{\pushline}{\Indp}% Indent
   \newcommand{\popline}{\Indm\dosemic}% Remove indent
-  % Default Keywords
-  \SetKwInOut{Input}{Input}
-  \SetKwInOut{Output}{Output}
-  \SetKwProg{proc}{Procedure}{}{}
-  \SetKwComment{Comment}{$\triangleright$\ }{}
-  \SetKwProg{Fn}{Function}{:}{end}
+  % 'for' loop Macros
   \newcommand{\forcond}[3]{$#1=#2$ \KwTo $#3$}
-
   \newcommand{\forcondi}[2]{\forcond{i}{#1}{#2}}
   \newcommand{\forcondj}[2]{\forcond{j}{#1}{#2}}
+  \SetFuncSty{textsc}
+  % from Russell's Artificial intelligence A Modern Approach
+  \SetKwFunction{InitialState}{Initial-State}
+  \SetKwFunction{State}{State}
+  \SetKwFunction{PathCost}{Path-Cost}
+  \SetKwFunction{ChildNode}{Child-Node}
+  \SetKwFunction{Actions}{Actions}
+  \SetKwFunction{GoalTest}{Goal-Test}
+  \SetKwFunction{Solution}{Solution}
+  \SetKwFunction{Insert}{Insert}
+  % Data
+  \SetKwData{node}{node}
+  \SetKwData{frontier}{frontier}
+  \SetKwData{explored}{explored}
+  \SetKwData{problem}{problem}
+  \SetKwData{action}{action}
+  % Data Structures
+  \SetKwFunction{Empty}{Empty?}
+  \SetKwFunction{Pop}{Pop}
+  \SetKwFunction{Push}{Push}
+  \SetKwBlock{Loop}{loop do}{}
   % Use 'algo_' string prefixes for vref labels.
   \unless\ifCS@novarioref
     \labelformat{algocf}{\textit{alg.}\,(#1)}
@@ -381,6 +409,7 @@
     }%
   }%
 }
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document Formatting
