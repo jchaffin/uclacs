@@ -104,9 +104,13 @@
 \ifCS@usenix
   \LoadClass[letterpaper,twocolumn,10pt]{article}
 \else
-\LoadClass[12pt, a4paper]{article}
+\LoadClass[10pt, a4paper]{article}
 \RequirePackage{geometry}
-\geometry{letterpaper,head=13pt, marginparwidth=6pc,heightrounded}
+\geometry{twoside=true,
+  includeheadfoot, head=13pt, foot=2pc,
+  paperwidth=6.75in, paperheight=10in,
+  top=58pt, bottom=44pt, inner=46pt, outer=46pt,
+  marginparwidth=2pc,heightrounded}
 \fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,7 +203,7 @@
 % https://tex.stackexchange.com/a/149718/156736
 \RequirePackage{listings} % http://ctan.org/pkg/listings
 \lstset{%
-  basicstyle=\ttfamily,
+  basicstyle=\ttfamily\footnotesize,
   mathescape
 }%
 
@@ -234,8 +238,13 @@
 }
 
 \RequirePackage{booktabs}
+% Grammar Diagrams
 \RequirePackage{rail}
+\railoptions{-t}
 \newenvironment{figrail}{\begin{figure}\begin{rail}}{\end{rail}\end{figure}}
+
+\RequirePackage{bitpattern}
+\RequirePackage{drawstack}
 
 % algorithm2e
 \ifthenelse{\boolean{CS@noalgorithm2e}}{
@@ -402,14 +411,16 @@
 
 \ifthenelse{\boolean{CS@noforest}}{}{%
   \RequirePackage{adjustbox}
-  \RequirePackage{forest}
-  \forestset{
-    default preamble={%
-      for tree={circle,draw, l sep=2mm}%
-    }%
-  }%
+  \RequirePackage[]{forest}
+  \forestset{ % tree styles
+    default preamble={
+      for tree={
+        text height=1em, inner ysep=0.5ex, s sep=1em, edge={semithick},
+        text depth={}, l sep=1em
+      }
+    }
+  }
 }
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document Formatting
