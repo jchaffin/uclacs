@@ -147,7 +147,7 @@
 \RequirePackage{unicode-math}
 \setmainfont{STIX Two Text}
 \setmathfont{STIX Two Math}[StylisticSet=02, StylisticSet=08]
-\setmonofont[Scale=MatchUppercase]{DejaVu Sans Mono}
+\setmonofont[Scale=0.8]{DejaVu Sans Mono}
 \RequirePackage{cabin}
 \RequirePackage{xpatch}
 \RequirePackage{minted}
@@ -157,6 +157,7 @@
 \RequirePackage{amsthm}    % https://ctan.org/pkg/amsthm
 \RequirePackage{thmtools}  % https://ctan.org/pkg/thmtools
 \definecolor{thmtextcolor}{RGB}{0, 175, 236}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
 \definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
 \colorlet{LightGray}{White!90!Periwinkle}
 \AtBeginEnvironment{mdframed}{%
@@ -177,15 +178,15 @@
     },
     spaceabove=3pt,spacebelow=3pt,%
     headfont=\normalfont\bfseries,%
-    notefont=\normalfont\bfseries,%
+    notefont=\scshape,%
     notebraces={}{. },%
     headpunct={},%
     postheadhook={\hangindent16pt}, % \\ removed
     postheadspace=\newline,%
     headindent=5pt,%
     bodyfont=\normalfont,%
-    headformat={\llap{\smash{\parbox[t]{0.8in}{\centering \NAME\\
-            \NUMBER}}} \hspace{8pt} \NOTE},%
+    headformat={\hspace{3pt}\llap{\smash{\parbox[t]{0.8in}{\centering
+            {\footnotesize \NAME\\ \NUMBER}}}} \hspace{3pt}\NOTE},%
     ]{thmsty} % theorem style
   % Theorems
   \declaretheorem[style=thmsty, numberwithin=section ]{theorem}
