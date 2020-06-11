@@ -144,7 +144,7 @@
 \RequirePackage[fleqn,tbtags]{mathtools}
 \RequirePackage{fontspec}
 \RequirePackage{amsfonts}
-\RequirePackage{unicode-math}
+\RequirePackage[math-style=literal]{unicode-math}
 \setmainfont{STIX Two Text}
 \setmathfont{STIX Two Math}[StylisticSet=02, StylisticSet=08]
 \setmonofont[Scale=0.8]{DejaVu Sans Mono}
@@ -442,9 +442,6 @@
     \@date\\
     \unless\ifx\CS@profname\@empty
     \CS@profname
-    \fi
-    \unless\ifx\CS@coursenumber\@empty
-    \CS@coursenumber \\
     \fi
   \end{flushright}\egroup
 }
