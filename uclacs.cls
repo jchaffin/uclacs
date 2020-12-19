@@ -144,7 +144,7 @@
 \RequirePackage[fleqn,tbtags]{mathtools}
 \RequirePackage{fontspec}
 \RequirePackage{amsfonts}
-\RequirePackage[math-style=literal]{unicode-math}
+\RequirePackage{unicode-math}
 \setmainfont{STIX Two Text}
 \setmathfont{STIX Two Math}[StylisticSet=02, StylisticSet=08]
 \setmonofont[Scale=0.8]{DejaVu Sans Mono}
@@ -156,6 +156,7 @@
 } % Remove red boxing around syntax errors
 \RequirePackage{amsthm}    % https://ctan.org/pkg/amsthm
 \RequirePackage{thmtools}  % https://ctan.org/pkg/thmtools
+\RequirePackage{tcolorbox}
 \definecolor{thmtextcolor}{RGB}{0, 175, 236}
 \definecolor{bg}{rgb}{0.95,0.95,0.95}
 \definecolor{thmbackgroundcolor}{RGB}{226, 244, 253}
@@ -243,10 +244,10 @@
 \RequirePackage{rail}
 \railoptions{-t}
 \newenvironment{figrail}{\begin{figure}\begin{rail}}{\end{rail}\end{figure}}
-
+\RequirePackage{bussproofs} % derivational proofs
 \RequirePackage{bitpattern}
 \RequirePackage{drawstack}
-
+\RequirePackage{pseudocode}
 % algorithm2e
 \ifthenelse{\boolean{CS@noalgorithm2e}}{
 
@@ -262,10 +263,11 @@
   \RequirePackage[algoruled,linesnumbered]{algorithm2e}
 % Default Keywords
   \SetKwInOut{Input}{Input}
-  \SetKwInOut{Output}{output}
+  \SetKwInOut{Output}{Output}
   \SetKwProg{proc}{Procedure}{}{}
   \SetKwComment{Comment}{ $\triangleright$\ }{}
   \SetKwProg{Fn}{Function}{:}{end}
+  \SetKwProg{Def}{def}{:}{end}
   \newcommand{\nosemic}{\SetEndCharOfAlgoLine{\relax}} % Drop semi-colon ;
   \newcommand{\dosemic}{\SetEndCharOfAlgoLine{\string;}} % Reinstate
   \newcommand{\pushline}{\Indp}% Indent
@@ -284,9 +286,13 @@
   \SetKwFunction{GoalTest}{Goal-Test}
   \SetKwFunction{Solution}{Solution}
   \SetKwFunction{Insert}{Insert}
+  % TCS
+  \SetKwProg{Def}{def}{:}{}
+  \SetKwFunction{EVAL}{Eval}
   % Data
   \SetKwData{node}{node}
   \SetKwData{frontier}{frontier}
+  \SetKwData{result}{result}
   \SetKwData{explored}{explored}
   \SetKwData{problem}{problem}
   \SetKwData{action}{action}
@@ -401,13 +407,23 @@
 \makeglossaries
 \ifthenelse{\boolean{CS@nolua}}{}{%
   \RequirePackage{tikz}
+  \usetikzlibrary{automata, positioning, arrows}
+  \tikzset{
+    ->, % makes the edges directed
+    node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+    every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+    initial text=$ $, % sets the text that appears on the start arrow
+  }
+
   \ifluatex
     \usetikzlibrary{graphs,graphdrawing} % Requires LuaLatex
+
     \usegdlibrary{UclacsGraph}
     \usegdlibrary{trees}
     \usegdlibrary{layered}
   \fi
   \newcommand{\vertex}{\node[circle, draw, radius=1cm]}
+  \RequirePackage{circuitikz}
 }
 
 \ifthenelse{\boolean{CS@noforest}}{}{%
@@ -426,6 +442,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document Formatting
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 \newcommand*\titlehrule[1][0.4pt]{%
   \leavevmode\leaders\hrule height#1\hfill\kern0pt
 }
